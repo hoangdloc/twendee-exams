@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+import { IUser, IUserApi } from '../@types/user';
+import { IUserState } from '../@types/userState';
 import { getListUsersAction } from '../actions/userAction';
-import { IUser } from '../types/user';
-import { IUserState } from '../types/userState';
 
 const initialState: IUserState = {
   users: [] as IUser[],
@@ -19,7 +19,27 @@ export const homeSlice = createSlice({
         state.loading = true;
       })
       .addCase(getListUsersAction.fulfilled, (state, action) => {
-        state.users = action.payload;
+        const usersFromApi = action.payload;
+
+        const convertUsersApiToUsers = (usersApi: IUserApi[]): IUser[] => {
+          const users = usersApi.map((userApi) => {
+            const user: IUser = {
+              title: userApi.name.title,
+              first: userApi.name.first,
+              last: userApi.name.last,
+              username: userApi.login.username,
+              thumbnail: userApi.picture.large
+            };
+
+            return user;
+          });
+
+          return users;
+        };
+
+        const newUsers = convertUsersApiToUsers(usersFromApi);
+
+        state.users = newUsers;
         state.loading = false;
       })
       .addCase(getListUsersAction.rejected, (state) => {

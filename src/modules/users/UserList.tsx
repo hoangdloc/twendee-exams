@@ -1,19 +1,51 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { v4 } from 'uuid';
 
 import { AppDispatch, RootState } from '../../redux/store';
+import { Spinner } from '../../shared/components/loader';
+import { Table } from '../../shared/components/table';
+import { ColumnType } from '../../shared/components/table/Table';
+import { IUser } from './@types/user';
 import { getListUsersAction } from './actions/userAction';
-import { IUser } from './types/user';
+
+const columns: Array<ColumnType<IUser, keyof IUser>> = [
+  {
+    key: 'title',
+    header: 'Title',
+    dataType: 'text'
+  },
+  {
+    key: 'first',
+    header: 'First Name',
+    dataType: 'text'
+  },
+  {
+    key: 'last',
+    header: 'Last Name',
+    dataType: 'text'
+  },
+  {
+    key: 'username',
+    header: 'Username',
+    dataType: 'text'
+  },
+  {
+    key: 'thumbnail',
+    header: 'Thumbnail',
+    dataType: 'image'
+  }
+];
 
 const UserList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const users = useSelector((state: RootState) => state.userSlice.users);
+  const loading = useSelector((state: RootState) => state.userSlice.loading);
+  // loading = true;
 
   const loadUsers = async (): Promise<void> => {
     try {
-      await dispatch(getListUsersAction({ results: 10 }));
+      await dispatch(getListUsersAction({}));
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -27,50 +59,24 @@ const UserList: React.FC = () => {
     void loadUsers();
   }, []);
 
-  const userItem = (user: IUser, key: string): JSX.Element => {
-    return (
-      <tr key={key}>
-        <td className="whitespace-nowrap px-4 py-2 text-gray-900">{user.name.title}</td>
-        <td className="whitespace-nowrap px-4 py-2 text-gray-900">{user.name.first}</td>
-        <td className="whitespace-nowrap px-4 py-2 text-gray-900">{user.name.last}</td>
-        <td className="whitespace-nowrap px-4 py-2 text-gray-900">{user.login.username}</td>
-        <td className="whitespace-nowrap px-4 py-2 text-gray-900">
-          <img src={user.picture.large} alt={user.login.username} />
-        </td>
-      </tr>
-    );
-  };
-
   return (
-    <div className="rounded-lg w-full bg-white border">
-      {false && <div>Toolbar</div>}
-      <table className="min-w-full divide-y-2 divide-gray-200 text-base">
-        <thead>
-          <tr>
-            <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-400">
-              Title
-            </th>
-            <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-400">
-              First Name
-            </th>
-            <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-400">
-              Last Name
-            </th>
-            <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-400">
-              Username
-            </th>
-            <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-400">
-              Thumbnail
-            </th>
-          </tr>
-        </thead>
-
-        <tbody className="divide-y divide-gray-200">
-          {users.length > 0 && users.map(user => userItem(user, v4()))}
-        </tbody>
-      </table>
-      {false && <div>Pagination</div>}
+    <div className="flex flex-col items-center justify-center w-full h-full gap-10 p-8">
+      <h1 className="text-2xl font-semibold">User Management App</h1>
+      {loading ? <TableLoader /> : null}
+      {!loading
+        ? <Table
+          data={users}
+          columns={columns}
+          limit={10}
+        />
+        : null}
     </div>
+  );
+};
+
+const TableLoader: React.FC = () => {
+  return (
+    <div className='flex items-center justify-center h-40 min-w-full bg-white border rounded-lg'><Spinner/></div>
   );
 };
 

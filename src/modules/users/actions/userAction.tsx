@@ -2,18 +2,18 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import axiosInstance from '../../../config/axios';
+import { USER_RESULT } from '../../../config/constant';
 
 interface IGetListUsers {
-  page?: number
   results?: number
 }
 
 export const getListUsersAction = createAsyncThunk(
   'getListUsers',
-  async ({ page = 1, results = 100 }: IGetListUsers) => {
+  async ({ results = USER_RESULT }: IGetListUsers) => {
     try {
       const response = await axiosInstance.get('/', {
-        params: { page, results }
+        params: { results, nat: 'gb,us,ca' }
       });
       return response.data.results;
     } catch (error) {

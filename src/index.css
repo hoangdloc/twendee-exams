@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply font-primary text-base font-normal mx-auto bg-gray-50;
+  @apply mx-auto text-base font-normal font-primary bg-gray-50;
   text-rendering: optimizeLegibility;
   max-width: 1440px;
 }

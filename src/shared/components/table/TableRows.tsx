@@ -1,6 +1,7 @@
-import React, { useId } from 'react';
+import React from 'react';
 
 import { ColumnType } from './Table';
+import { useTableContext } from './TableContext';
 
 interface TableRowsProps<T, K extends keyof T> {
   data: T[]
@@ -11,18 +12,29 @@ const TableRows = <T, K extends keyof T>(
   props: TableRowsProps<T, K>
 ): JSX.Element => {
   const { data, columns } = props;
-  const rowId = useId();
-  const columnId = useId();
-  const rows = data.map((row) => {
+  const { limit } = useTableContext();
+
+  const rows = data.slice(0, limit).map((row, index) => {
     return (
-      <tr key={rowId}>
-        {columns.map((column) => {
-          const content = row[column.key] as React.ReactNode;
+      <tr key={`row-${index}`}>
+        {columns.map((column, index) => {
+          const content = row[column.key] as string;
+
+          if (column.dataType === 'image') {
+            return (
+              <td
+                key={`cell-${index}`}
+                className="px-4 py-2 text-gray-900 whitespace-nowrap"
+              >
+                <img className='w-20 h-20 rounded-full shadow-md' src={content} />
+              </td>
+            );
+          }
 
           return (
             <td
-              key={columnId}
-              className="whitespace-nowrap px-4 py-2 text-gray-900"
+              key={`cell-${index}`}
+              className="px-4 py-2 text-gray-900 whitespace-nowrap"
             >
               {content}
             </td>
