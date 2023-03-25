@@ -3,26 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 import { AppDispatch, RootState } from '../../redux/store';
+import { Dropdown } from '../../shared/components/dropdown';
+import { IDropdownOption } from '../../shared/components/dropdown/Dropdown';
+import { SortIcon } from '../../shared/components/icons';
 import { Spinner } from '../../shared/components/loader';
 import { Table } from '../../shared/components/table';
 import { ColumnType } from '../../shared/components/table/Table';
-import { IUser } from './@types/user';
+import { User } from './@types/user';
 import { getListUsersAction } from './actions/userAction';
+import { sortByFullName, sortByUsername } from './slices/userSlice';
 
-const columns: Array<ColumnType<IUser, keyof IUser>> = [
+const columns: Array<ColumnType<User, keyof User>> = [
   {
-    key: 'title',
-    header: 'Title',
-    dataType: 'text'
-  },
-  {
-    key: 'first',
-    header: 'First Name',
-    dataType: 'text'
-  },
-  {
-    key: 'last',
-    header: 'Last Name',
+    key: 'fullname',
+    header: 'Fullname',
     dataType: 'text'
   },
   {
@@ -41,7 +35,17 @@ const UserList: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const users = useSelector((state: RootState) => state.userSlice.users);
   const loading = useSelector((state: RootState) => state.userSlice.loading);
-  // loading = true;
+
+  const dropdownOptions: IDropdownOption[] = [
+    {
+      label: 'Full name',
+      onClick: () => dispatch(sortByFullName())
+    },
+    {
+      label: 'Username',
+      onClick: () => dispatch(sortByUsername())
+    }
+  ];
 
   const loadUsers = async (): Promise<void> => {
     try {
@@ -64,11 +68,24 @@ const UserList: React.FC = () => {
       <h1 className="text-2xl font-semibold">User Management App</h1>
       {loading ? <TableLoader /> : null}
       {!loading
-        ? <Table
-          data={users}
-          columns={columns}
-          limit={10}
-        />
+        ? (
+          <div className="flex flex-col min-w-full gap-4">
+            <Dropdown
+              options={dropdownOptions}
+              placeholder={() => (
+                <React.Fragment>
+                  <SortIcon className="w-4 h-4" />
+                  <span>Sort by</span>
+                </React.Fragment>
+              )}
+            />
+            <Table
+              data={users}
+              columns={columns}
+              limit={10}
+              pagination
+            />
+          </div>)
         : null}
     </div>
   );
@@ -76,7 +93,9 @@ const UserList: React.FC = () => {
 
 const TableLoader: React.FC = () => {
   return (
-    <div className='flex items-center justify-center h-40 min-w-full bg-white border rounded-lg'><Spinner/></div>
+    <div className="flex items-center justify-center h-40 min-w-full bg-white border rounded-lg">
+      <Spinner />
+    </div>
   );
 };
 

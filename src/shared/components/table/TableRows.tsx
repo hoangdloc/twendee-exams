@@ -12,9 +12,9 @@ const TableRows = <T, K extends keyof T>(
   props: TableRowsProps<T, K>
 ): JSX.Element => {
   const { data, columns } = props;
-  const { limit } = useTableContext();
+  const { indexOfFirstRecord, indexOfLastRecord } = useTableContext();
 
-  const rows = data.slice(0, limit).map((row, index) => {
+  const rows = data.slice(indexOfFirstRecord, indexOfLastRecord).map((row, index) => {
     return (
       <tr key={`row-${index}`}>
         {columns.map((column, index) => {

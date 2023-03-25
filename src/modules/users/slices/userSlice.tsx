@@ -1,18 +1,37 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { IUser, IUserApi } from '../@types/user';
+import { User, UserApi } from '../@types/user';
 import { IUserState } from '../@types/userState';
 import { getListUsersAction } from '../actions/userAction';
 
 const initialState: IUserState = {
-  users: [] as IUser[],
+  users: [] as User[],
   loading: true
 };
 
-export const homeSlice = createSlice({
+export const userSlice = createSlice({
   name: 'users',
   initialState,
-  reducers: {},
+  reducers: {
+    sortByFullName: (state) => {
+      state.users = state.users.sort((a, b) => {
+        const nameA = a.fullname.split(' ')[2].toLowerCase();
+        const nameB = b.fullname.split(' ')[2].toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+    },
+    sortByUsername: (state) => {
+      state.users = state.users.sort((a, b) => {
+        const nameA = a.username.toLowerCase();
+        const nameB = b.username.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+    }
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getListUsersAction.pending, (state) => {
@@ -21,12 +40,14 @@ export const homeSlice = createSlice({
       .addCase(getListUsersAction.fulfilled, (state, action) => {
         const usersFromApi = action.payload;
 
-        const convertUsersApiToUsers = (usersApi: IUserApi[]): IUser[] => {
+        const convertUsersApiToUsers = (usersApi: UserApi[]): User[] => {
           const users = usersApi.map((userApi) => {
-            const user: IUser = {
-              title: userApi.name.title,
-              first: userApi.name.first,
-              last: userApi.name.last,
+            const title = userApi.name.title;
+            const first = userApi.name.first;
+            const last = userApi.name.last;
+            const fullname = [title, first, last].join(' ');
+            const user: User = {
+              fullname,
               username: userApi.login.username,
               thumbnail: userApi.picture.large
             };
@@ -48,4 +69,6 @@ export const homeSlice = createSlice({
   }
 });
 
-export default homeSlice.reducer;
+export const { sortByFullName, sortByUsername } = userSlice.actions;
+
+export default userSlice.reducer;

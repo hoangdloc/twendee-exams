@@ -19,7 +19,7 @@ export interface TableProps<T, K extends keyof T> {
 }
 
 const Table = <T, K extends keyof T>(props: TableProps<T, K>): JSX.Element => {
-  const { columns, data, limit } = props;
+  const { columns, data, limit, pagination } = props;
 
   return (
     <TableProvider
@@ -27,7 +27,7 @@ const Table = <T, K extends keyof T>(props: TableProps<T, K>): JSX.Element => {
       limit={limit}
     >
       <div className="min-w-full rounded-lg">
-        <div className="min-w-full bg-white border rounded-lg">
+        <div className="min-w-full bg-white border rounded-lg shadow-sm">
           <table className="min-w-full text-base divide-y-2 divide-gray-200">
             <TableHeader columns={columns} />
             <TableRows
@@ -36,7 +36,7 @@ const Table = <T, K extends keyof T>(props: TableProps<T, K>): JSX.Element => {
             />
           </table>
         </div>
-        <TablePagination />
+        {(pagination ?? false) ? <TablePagination /> : null}
       </div>
     </TableProvider>
   );

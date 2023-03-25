@@ -8,20 +8,49 @@ interface TableProviderProps {
 
 interface TableContextType extends TableProviderProps {
   currentPage: number
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>
+  handlePrevPageClick: () => void
+  handleNextPageClick: () => void
+  totalPage: number
+  indexOfLastRecord: number
+  indexOfFirstRecord: number
 }
 
 const TableContext = createContext<TableContextType | null>(null);
 
-const TableProvider: React.FC<TableProviderProps> = ({ children, ...props }) => {
-  const [currentPage, setCurrentPage] = useState<number>(1);
+const TableProvider: React.FC<TableProviderProps> = ({
+  children,
+  ...props
+}) => {
+  const { limit, dataSize } = props;
 
-  const values = { currentPage, setCurrentPage, ...props };
+  // Handle Pagination
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPage = Math.ceil(dataSize / limit);
+  const indexOfLastRecord = currentPage * limit;
+  const indexOfFirstRecord = indexOfLastRecord - limit;
+  const handleNextPageClick = (): void => {
+    if (currentPage !== totalPage) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  const handlePrevPageClick = (): void => {
+    if (currentPage !== 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const values = {
+    currentPage,
+    indexOfLastRecord,
+    indexOfFirstRecord,
+    totalPage,
+    handlePrevPageClick,
+    handleNextPageClick,
+    ...props
+  };
 
   return (
-    <TableContext.Provider value={values}>
-      {children}
-    </TableContext.Provider>
+    <TableContext.Provider value={values}>{children}</TableContext.Provider>
   );
 };
 

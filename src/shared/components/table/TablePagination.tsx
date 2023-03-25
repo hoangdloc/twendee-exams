@@ -4,14 +4,16 @@ import { Button } from '../button';
 import { LeftArrowIcon, RightArrowIcon } from '../icons';
 import { useTableContext } from './TableContext';
 
-const TablePagination: React.FC = (props) => {
-  const { dataSize, limit, currentPage } = useTableContext();
-
-  const totalPage = Math.ceil(dataSize / limit);
+const TablePagination: React.FC = () => {
+  const { currentPage, totalPage, handleNextPageClick, handlePrevPageClick } =
+    useTableContext();
 
   return (
     <div className="flex items-center justify-center gap-4 p-4 mt-8">
-      <Button>
+      <Button
+        disabled={currentPage === 1}
+        onClick={handlePrevPageClick}
+      >
         <LeftArrowIcon />
       </Button>
 
@@ -21,7 +23,10 @@ const TablePagination: React.FC = (props) => {
         {totalPage}
       </p>
 
-      <Button>
+      <Button
+        disabled={currentPage === totalPage}
+        onClick={handleNextPageClick}
+      >
         <RightArrowIcon />
       </Button>
     </div>

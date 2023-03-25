@@ -1,4 +1,4 @@
-export interface IUserApi {
+export interface UserApi {
   name: {
     title: string
     first: string
@@ -12,10 +12,8 @@ export interface IUserApi {
   }
 }
 
-export interface IUser {
-  title: string
-  first: string
-  last: string
+export interface User {
+  fullname: string
   username: string
   thumbnail: string
 }

@@ -1,10 +1,12 @@
 import React from 'react';
 
-const RightArrowIcon: React.FC = () => {
+import { IconProps } from '.';
+
+const RightArrowIcon: React.FC<IconProps> = ({ className = 'w-3 h-3' }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className="h-3 w-3"
+      className={className}
       viewBox="0 0 20 20"
       fill="currentColor"
     >
