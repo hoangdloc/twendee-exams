@@ -13,6 +13,7 @@ const TablePagination: React.FC = () => {
       <Button
         disabled={currentPage === 1}
         onClick={handlePrevPageClick}
+        title='Previous page'
       >
         <LeftArrowIcon />
       </Button>
@@ -26,6 +27,7 @@ const TablePagination: React.FC = () => {
       <Button
         disabled={currentPage === totalPage}
         onClick={handleNextPageClick}
+        title='Next page'
       >
         <RightArrowIcon />
       </Button>
